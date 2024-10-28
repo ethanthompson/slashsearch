@@ -6,41 +6,45 @@
       if (event.key === '/' && !document.activeElement.matches('input, textarea')) {
         event.preventDefault(); // Prevent default browser behavior
         
-        // Check which website the user is on and if it is enabled in settings
-        chrome.storage.sync.get(['enabledSites'], function(result) {
-          const enabledSites = result.enabledSites || {
-            'amazon': true,
-            'walmart': true,
-            'printables': true
+        chrome.storage.sync.get(['specialSites'], function(result) {
+          const specialSites = result.specialSites || {
+            'amazon': true
           };
   
-          if (window.location.hostname.includes('amazon.com') && enabledSites.amazon) {
+          // Check for special cases first
+          if (window.location.hostname.includes('amazon.com') && specialSites.amazon) {
             focusSearchBoxAmazon();
-          } else if (window.location.hostname.includes('walmart.com') && enabledSites.walmart) {
-            focusSearchBoxWalmart();
-          } else if (window.location.hostname.includes('printables.com') && enabledSites.printables) {
-            focusSearchBoxPrintables();
+            return;
           }
+
+          // Default behavior: look for any search input
+          focusDefaultSearchBox();
         });
       }
     });
   
+    function focusDefaultSearchBox() {
+      // Try different common search input selectors in order of preference
+      const searchSelectors = [
+        'input[type="search"]',
+        'input[role="searchbox"]',
+        'input[name="q"]',
+        'input[name="search"]',
+        'input[placeholder*="search" i]',
+        'input[placeholder*="Search" i]'
+      ];
+
+      for (const selector of searchSelectors) {
+        const searchBox = document.querySelector(selector);
+        if (searchBox) {
+          searchBox.focus();
+          return;
+        }
+      }
+    }
+  
     function focusSearchBoxAmazon() {
       const searchBox = document.querySelector('input[role="searchbox"]');
-      if (searchBox) {
-        searchBox.focus();
-      }
-    }
-  
-    function focusSearchBoxWalmart() {
-      const searchBox = document.querySelector('input[type="search"]');
-      if (searchBox) {
-        searchBox.focus();
-      }
-    }
-  
-    function focusSearchBoxPrintables() {
-      const searchBox = document.querySelector('input[type="search"]');
       if (searchBox) {
         searchBox.focus();
       }
