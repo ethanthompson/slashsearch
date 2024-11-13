@@ -4,7 +4,6 @@
     "version": "1.0",
     "description": "Focuses search box on certain websites when '/' is pressed.",
     "permissions": [
-        "activeTab",
         "storage"
     ],
     "background": {
