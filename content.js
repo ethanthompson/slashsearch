@@ -9,6 +9,11 @@
     document.addEventListener('keydown', function(event) {
         // Check if the pressed key is "/" and no input/textarea is focused
         if (event.key === '/' && !document.activeElement.matches('input, textarea')) {
+            // Check if the URL contains "wp-admin" or if a form element is selected
+            if (window.location.href.includes('wp-admin') || document.activeElement.closest('form')) {
+                return; // Do not intercept
+            }
+
             event.preventDefault(); // Prevent default browser behavior
             
             chrome.storage.sync.get(['specialSites'], function(result) {
